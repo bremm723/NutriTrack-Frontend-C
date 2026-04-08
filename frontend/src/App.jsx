@@ -28,7 +28,6 @@ export default function App() {
   const [targetHarian,   setTargetHarian]   = useState()
   const [targetMingguan, setTargetMingguan] = useState(Array(7).fill(null))
 
-  // Tangkap token dari Google OAuth redirect
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const token = params.get('token')
@@ -36,8 +35,9 @@ export default function App() {
       localStorage.setItem('token', token)
       window.history.replaceState({}, '', '/')
     }
-    // Auto-login kalau token sudah ada
-    if (localStorage.getItem('token')) {
+
+    const savedToken = token || localStorage.getItem('token')
+    if (savedToken) {
       api.get('/user/me')
         .then(res => {
           const u = res.data

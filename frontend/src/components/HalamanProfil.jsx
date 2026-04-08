@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import api from '../api.js'
 
+const toDateInput = (val) => {
+  if (!val) return ''
+  return new Date(val).toISOString().split('T')[0]
+}
+
 export default function HalamanProfil({ user, onUpdateUser }) {
   const [editMode, setEditMode] = useState(false)
   const [form, setForm] = useState({
     nama: user.nama, email: user.email,
-    birthday: user.birthday || '', gender: user.gender || '',
+    birthday: toDateInput(user.birthday),
+    gender: user.gender || '',
     height: user.height || '', weight: user.weight || '',
   })
   const [loading, setLoading] = useState(false)
@@ -13,9 +19,15 @@ export default function HalamanProfil({ user, onUpdateUser }) {
 
   const bukaEdit  = () => setEditMode(true)
   const batalEdit = () => {
-    setForm({ nama: user.nama, email: user.email, birthday: user.birthday||'', gender: user.gender||'', height: user.height||'', weight: user.weight||'' })
+    setForm({
+      nama: user.nama, email: user.email,
+      birthday: toDateInput(user.birthday),
+      gender: user.gender || '',
+      height: user.height || '', weight: user.weight || ''
+    })
     setEditMode(false)
   }
+
   const simpan = async () => {
     setLoading(true)
     try {
@@ -46,7 +58,7 @@ export default function HalamanProfil({ user, onUpdateUser }) {
             <span className="profil-info-label">Birthday</span>
             {editMode
               ? <input className="profil-input" type="date" value={form.birthday} onChange={e => setForm({...form, birthday: e.target.value})} />
-              : <span className="profil-info-val">{user.birthday || 'DD/MM/YY'}</span>}
+              : <span className="profil-info-val">{user.birthday ? toDateInput(user.birthday) : 'DD/MM/YY'}</span>}
           </div>
           <div className="profil-info-row">
             <span className="profil-info-label">Gender</span>
