@@ -58,7 +58,7 @@ export default function HalamanRegister({ onRegister, onKeLogin }) {
           <div className="auth-divider"><span>— Atau daftar dengan —</span></div>
           <div className="auth-social-row">
             <button className="auth-social-btn"
-              onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth/google`}>
+              onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}>
               <AiFillGoogleCircle /> Google
             </button>
           </div>
