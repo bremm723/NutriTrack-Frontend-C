@@ -51,6 +51,26 @@ export default function App() {
     }
   }, [])
 
+  // Load tracking hari ini dari backend saat user login
+  useEffect(() => {
+    if (!user) return
+    api.get('/tracking')
+      .then(res => {
+        const items = res.data.map(t => ({
+          id: t.id,
+          nama: t.food.name,
+          porsi: t.food.portion,
+          waktu: t.mealTime,
+          kalori: t.food.calories,
+          karbo: t.food.carbs,
+          protein: t.food.protein,
+          lemak: t.food.fat,
+        }))
+        setCatatanItems(items)
+      })
+      .catch(() => {})
+  }, [user])
+
   const handleLogin    = (u) => { setUser(u); setAuthPage(null) }
   const handleRegister = (u) => { setUser(u); setAuthPage(null) }
   const handleUpdateUser = (data) => setUser(prev => ({ ...prev, ...data }))
@@ -60,15 +80,53 @@ export default function App() {
     document.body.classList.toggle('dark-mode')
   }
 
-  const tambahMakanan = (data) => {
-    setCatatanItems(prev => [...prev, { id: nextId.current++, ...data }])
+  const tambahMakanan = async (data) => {
+    try {
+      const res = await api.post('/tracking', data)
+      const t = res.data
+      setCatatanItems(prev => [...prev, {
+        id: t.id,
+        nama: t.food.name,
+        porsi: t.food.portion,
+        waktu: t.mealTime,
+        kalori: t.food.calories,
+        karbo: t.food.carbs,
+        protein: t.food.protein,
+        lemak: t.food.fat,
+      }])
+    } catch {
+      console.error('Gagal tambah tracking')
+    }
   }
-  const updateItem = (id, data) => {
-    setCatatanItems(prev => prev.map(it => it.id === id ? { ...it, ...data } : it))
+
+  const updateItem = async (id, data) => {
+    try {
+      const res = await api.put(`/tracking/${id}`, data)
+      const t = res.data
+      setCatatanItems(prev => prev.map(it => it.id === id ? {
+        id: t.id,
+        nama: t.food.name,
+        porsi: t.food.portion,
+        waktu: t.mealTime,
+        kalori: t.food.calories,
+        karbo: t.food.carbs,
+        protein: t.food.protein,
+        lemak: t.food.fat,
+      } : it))
+    } catch {
+      console.error('Gagal update tracking')
+    }
   }
-  const hapusItem = (id) => {
-    setCatatanItems(prev => prev.filter(it => it.id !== id))
+
+  const hapusItem = async (id) => {
+    try {
+      await api.delete(`/tracking/${id}`)
+      setCatatanItems(prev => prev.filter(it => it.id !== id))
+    } catch {
+      console.error('Gagal hapus tracking')
+    }
   }
+
   const terapkanTarget = (hari, kalori) => {
     const idx = HARI_MAP[hari]
     if (idx === undefined) return
