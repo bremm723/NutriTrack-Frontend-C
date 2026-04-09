@@ -5,7 +5,7 @@ export default function AirTracker() {
   const [terisi, setTerisi] = useState(0)
 
   useEffect(() => {
-    api.get('/tracking/air')
+    api.get('/user/air')
       .then(res => setTerisi(res.data.jumlah))
       .catch(() => {})
   }, [])
@@ -13,7 +13,7 @@ export default function AirTracker() {
   const toggle = async (i) => {
     const jumlahBaru = i < terisi ? i : i + 1
     setTerisi(jumlahBaru)
-    await api.put('/tracking/air', { jumlah: jumlahBaru })
+    await api.put('/user/air', { jumlah: jumlahBaru })
   }
 
   return (

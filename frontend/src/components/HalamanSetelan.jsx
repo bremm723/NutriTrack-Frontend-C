@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import api from '../api.js'
 
 export default function HalamanSetelan({ user, onUpdateUser, tema, onToggleTema, onLogout }) {
   const [username,      setUsername]      = useState(user.nama)
@@ -12,20 +13,31 @@ export default function HalamanSetelan({ user, onUpdateUser, tema, onToggleTema,
   const [showPassBaru,  setShowPassBaru]  = useState(false)
   const [showKonfirmLogout, setShowKonfirmLogout] = useState(false)
 
-  const simpanAkun = () => {
+  const simpanAkun = async () => {
     if (!username.trim()) { setPesanAkun('❌ Username tidak boleh kosong.'); return }
-    onUpdateUser({ nama: username.trim(), email: email.trim() })
-    setPesanAkun('✅ Profil berhasil diperbarui!')
-    setTimeout(() => setPesanAkun(''), 3000)
+    try {
+      await api.put('/user/update-profil', { nama: username.trim(), email: email.trim() })
+      onUpdateUser({ nama: username.trim(), email: email.trim() })
+      setPesanAkun('✅ Profil berhasil diperbarui!')
+      setTimeout(() => setPesanAkun(''), 3000)
+    } catch {
+      setPesanAkun('❌ Gagal memperbarui profil.')
+    }
   }
 
-  const simpanPassword = () => {
+  const simpanPassword = async () => {
     if (!passLama) { setPesanPass('❌ Masukkan password lama.'); return }
     if (passBaru.length < 6) { setPesanPass('❌ Password baru minimal 6 karakter.'); return }
     if (passBaru !== passKonfirm) { setPesanPass('❌ Konfirmasi password tidak cocok.'); return }
-    setPassLama(''); setPassBaru(''); setPassKonfirm('')
-    setPesanPass('✅ Password berhasil diperbarui!')
-    setTimeout(() => setPesanPass(''), 3000)
+    try {
+      await api.put('/user/update-password', { passLama, passBaru })
+      setPassLama(''); setPassBaru(''); setPassKonfirm('')
+      setPesanPass('✅ Password berhasil diperbarui!')
+      setTimeout(() => setPesanPass(''), 3000)
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Gagal memperbarui password.'
+      setPesanPass(`❌ ${msg}`)
+    }
   }
 
   return (

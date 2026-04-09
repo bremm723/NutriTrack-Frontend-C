@@ -46,15 +46,39 @@ export default function App() {
     document.body.classList.toggle('dark-mode')
   }
 
-  const tambahMakanan = (data) => {
-    setCatatanItems(prev => [...prev, { id: nextId.current++, ...data }])
+  const tambahMakanan = async (data) => {
+    try {
+      const res = await api.post('/tracking', data)
+      const t = res.data
+      const newItem = {
+        id: t.id,
+        nama: t.food.name, kalori: t.food.calories,
+        karbo: t.food.carbs, protein: t.food.protein, lemak: t.food.fat,
+        porsi: t.food.portion, waktu: t.mealTime
+      }
+      setCatatanItems(prev => [...prev, newItem])
+    } catch(err) { console.error('Gagal tambah makanan') }
   }
 
-  const updateItem = (id, data) => {
-    setCatatanItems(prev => prev.map(it => it.id === id ? { ...it, ...data } : it))
+  const updateItem = async (id, data) => {
+    try {
+      const res = await api.put(`/tracking/${id}`, data)
+      const t = res.data
+      const updatedItem = {
+        id: t.id,
+        nama: t.food.name, kalori: t.food.calories,
+        karbo: t.food.carbs, protein: t.food.protein, lemak: t.food.fat,
+        porsi: t.food.portion, waktu: t.mealTime
+      }
+      setCatatanItems(prev => prev.map(it => it.id === id ? updatedItem : it))
+    } catch(err) { console.error('Gagal update makanan') }
   }
-  const hapusItem = (id) => {
-    setCatatanItems(prev => prev.filter(it => it.id !== id))
+
+  const hapusItem = async (id) => {
+    try {
+      await api.delete(`/tracking/${id}`)
+      setCatatanItems(prev => prev.filter(it => it.id !== id))
+    } catch(err) { console.error('Gagal hapus makanan') }
   }
 
 useEffect(() => {
@@ -67,29 +91,47 @@ useEffect(() => {
   if (token) {
     localStorage.setItem("token", token)
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      setUser({ id: payload.id })
-    } catch (err) {
-      console.error("Invalid token")
-      localStorage.removeItem("token")
+    // hapus token dari URL biar bersih
+    if (tokenFromUrl) {
+      window.history.replaceState({}, document.title, "/")
     }
-  }
 
-  // hapus token dari URL biar bersih
-  if (tokenFromUrl) {
-    window.history.replaceState({}, document.title, "/")
+    // Fetch data user lengkap dari API agar user.nama, email, dll tersedia
+    api.get('/user/me')
+      .then(res => {
+        const u = res.data
+        setUser({ id: u.id, nama: u.name, email: u.email, birthday: u.birthday, gender: u.gender, height: u.height, weight: u.weight })
+      })
+      .catch(() => {
+        console.error("Sesi tidak valid, logout.")
+        localStorage.removeItem("token")
+      })
+      .finally(() => {
+        setLoadingAuth(false)
+      })
+  } else {
+    setLoadingAuth(false)
   }
-
-  setLoadingAuth(false)
 }, [])
 
   useEffect(() => {
     if (!user) return
     api.get('user/target')
       .then(res => {
-        setTargetMingguan(res.data.targetMingguan)
+        setTargetMingguan(res.data.targetMingguan || Array(7).fill(null))
         setTargetHarian(res.data.targetHarian)
+      })
+
+    // Fetch catatan / tracking hari ini
+    api.get('/tracking')
+      .then(res => {
+        const loaded = res.data.map(t => ({
+          id: t.id,
+          nama: t.food.name, kalori: t.food.calories,
+          karbo: t.food.carbs, protein: t.food.protein, lemak: t.food.fat,
+          porsi: t.food.portion, waktu: t.mealTime
+        }))
+        setCatatanItems(loaded)
       })
   }, [user])
 

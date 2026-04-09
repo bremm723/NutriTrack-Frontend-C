@@ -9,7 +9,7 @@ const toDateInput = (val) => {
 export default function HalamanProfil({ user, onUpdateUser }) {
   const [editMode, setEditMode] = useState(false)
   const [form, setForm] = useState({
-    nama: user.nama, email: user.email,
+    nama: user.nama || user.name || '', email: user.email || '',
     birthday: toDateInput(user.birthday),
     gender: user.gender || '',
     height: user.height || '', weight: user.weight || '',
@@ -20,7 +20,7 @@ export default function HalamanProfil({ user, onUpdateUser }) {
   const bukaEdit  = () => setEditMode(true)
   const batalEdit = () => {
     setForm({
-      nama: user.nama, email: user.email,
+      nama: user.nama || user.name || '', email: user.email || '',
       birthday: toDateInput(user.birthday),
       gender: user.gender || '',
       height: user.height || '', weight: user.weight || ''
@@ -33,7 +33,7 @@ export default function HalamanProfil({ user, onUpdateUser }) {
     try {
       const res = await api.put('/user/update-profil', form)
       const u = res.data.user
-      onUpdateUser({ nama: u.name, email: u.email, birthday: u.birthday, gender: u.gender, height: u.height, weight: u.weight })
+      onUpdateUser({ nama: u.name || u.nama, email: u.email, birthday: u.birthday, gender: u.gender, height: u.height, weight: u.weight })
       setPesan('✅ Profil berhasil disimpan!')
       setEditMode(false)
       setTimeout(() => setPesan(''), 3000)
@@ -44,14 +44,15 @@ export default function HalamanProfil({ user, onUpdateUser }) {
     }
   }
 
-  const inisial = user.nama.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase()
+  const displayNama = user.nama || user.name || '?'
+  const inisial = displayNama.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase()
 
   return (
     <div className="profil-page">
       <div className="profil-card-besar">
         <div className="profil-avatar-besar">{inisial}</div>
-        <div className="profil-nama">{user.nama}</div>
-        <div className="profil-email-text">{user.email}</div>
+        <div className="profil-nama">{displayNama}</div>
+        <div className="profil-email-text">{user.email || ''}</div>
         {pesan && <div style={{color: pesan.startsWith('✅') ? 'green' : 'red', marginBottom: 8}}>{pesan}</div>}
         <div className="profil-info-list">
           <div className="profil-info-row">
