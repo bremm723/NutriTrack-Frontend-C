@@ -60,8 +60,8 @@ export default function App() {
     if (!user) return
     api.get('user/target')
     .then(res => {
-      setTargetMingguan(res.data.targetmingguan)
-      setTargetHarian(res.data.targetharian)
+      setTargetMingguan(res.data.targetMingguan)
+      setTargetHarian(res.data.targetHarian)
     })
   }, [user])
 
