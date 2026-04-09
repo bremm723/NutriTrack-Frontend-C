@@ -1281,11 +1281,7 @@
     .kalk-hasil-satuan { font-size: 12px; color: #aaa; }
     .kalk-hasil-note   { font-size: 11px; color: #bbb; margin-top: 2px; }
 
-    .kalk-turun { border-left: 4px solid #3b82f6; }
-    .kalk-turun .kalk-hasil-angka { color: #3b82f6; }
 
-    .kalk-naik  { border-left: 4px solid #f59e0b; }
-    .kalk-naik  .kalk-hasil-angka { color: #f59e0b; }
 
     .kalk-btn-reset {
       padding: 10px 24px;
@@ -2434,4 +2430,128 @@
       .nutrisi-grid-2 {
         grid-template-columns: 1fr;
       }
+    }
+    /* ── Multi-hari checkbox grid ── */
+    .hari-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .hari-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .hari-item:hover {
+      border-color: #a78bfa;
+      background: #faf8ff;
+    }
+
+    .hari-item.selected {
+      border-color: #7c3aed;
+      background: #ede9fe;
+    }
+
+    .hari-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 2px solid #d1d5db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .hari-checkbox.checked {
+      background: #7c3aed;
+      border-color: #7c3aed;
+    }
+
+    .hari-nama {
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .hari-item.selected .hari-nama {
+      color: #5b21b6;
+      font-weight: 600;
+    }
+
+    .setelan-btn-logout {
+      padding: 11px 20px;
+      border-radius: 10px;
+      border: 1.5px solid #ef4444;
+      background: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ef4444;
+      cursor: pointer;
+      transition: all 0.15s;
+      align-self: flex-start;
+    }
+
+    .setelan-btn-logout:hover {
+      background: #fef2f2;
+    }
+
+    .logout-konfirm {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .logout-konfirm-teks {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .logout-konfirm-aksi {
+      display: flex;
+      gap: 10px;
+    }
+
+    .setelan-btn-logout-konfirm {
+      padding: 9px 20px;
+      border-radius: 10px;
+      border: none;
+      background: #ef4444;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .setelan-btn-logout-konfirm:hover {
+      background: #dc2626;
+    }
+
+    body.dark-mode .setelan-btn-logout {
+      background: transparent;
+      border-color: #f87171;
+      color: #f87171;
+    }
+
+    body.dark-mode .setelan-btn-logout:hover {
+      background: #2d1a1a;
+    }
+
+    body.dark-mode .logout-konfirm-teks {
+      color: #a1a1aa;
     }

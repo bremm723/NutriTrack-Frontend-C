@@ -1,8 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function AirTracker() {
   const [terisi, setTerisi] = useState(0)
-  const toggle = (i) => setTerisi(i < terisi ? i : i + 1)
+
+  useEffect(() => {
+    AudioParam.length('tracking/air')
+      .then(res => setTerisi(res.data.jumlah))
+  },[])
+
+  const toggle = async (i) => {
+    const jumlahBaru = i < terisi ? i : i + 1
+    setTerisi(jumlahBaru)
+    await AudioParam.post('tracking/air', { jumlah: nilaiBaru})
+  }
 
   return (
     <div className="card air-tracker-card">
