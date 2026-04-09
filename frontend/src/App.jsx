@@ -55,6 +55,26 @@ export default function App() {
     setCatatanItems(prev => prev.filter(it => it.id !== id))
   }
 
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search)
+  const token = params.get("token")
+
+  if (token) {
+    // simpan token
+    localStorage.setItem("token", token)
+
+    // OPTIONAL: decode token kalau mau ambil user basic
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      setUser({ id: payload.id }) // minimal biar dianggap login
+    } catch (err) {
+      console.error("Invalid token")
+    }
+
+    // bersihin URL
+    window.history.replaceState({}, document.title, "/")
+  }
+}, [])
 
   useEffect(() => {
     if (!user) return
@@ -87,8 +107,12 @@ const terapkanTarget = async (hari, kalori) => {
     lemak:   acc.lemak   + (it.lemak   || 0),
   }), { kalori:0, karbo:0, protein:0, lemak:0 })
 
-  if (authPage === 'login')    return <HalamanLogin    onLogin={handleLogin}       onKeRegister={() => setAuthPage('register')} />
-  if (authPage === 'register') return <HalamanRegister onRegister={handleRegister} onKeLogin={() => setAuthPage('login')} />
+ if (!user) {
+  if (authPage === 'login') {
+    return <HalamanLogin onLogin={handleLogin} onKeRegister={() => setAuthPage('register')} />
+  }
+  return <HalamanRegister onRegister={handleRegister} onKeLogin={() => setAuthPage('login')} />
+}
 
   return (
     <>
