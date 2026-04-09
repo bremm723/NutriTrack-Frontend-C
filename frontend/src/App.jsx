@@ -18,6 +18,8 @@ import api from './api.js'
 const HARI_MAP = { Senin:0, Selasa:1, Rabu:2, Kamis:3, Jumat:4, Sabtu:5, Minggu:6 }
 
 export default function App() {
+  console.log("APP RENDER")
+
   const [authPage, setAuthPage] = useState('login')
   const [loadingAuth, setLoadingAuth] = useState(true)
   const [user,     setUser]     = useState(null)
@@ -56,6 +58,16 @@ export default function App() {
   const hapusItem = (id) => {
     setCatatanItems(prev => prev.filter(it => it.id !== id))
   }
+
+useEffect(() => {
+  console.log("USE EFFECT JALAN")
+
+  const params = new URLSearchParams(window.location.search)
+  const token = params.get("token")
+
+  console.log("TOKEN:", token)
+
+}, [])
 
 useEffect(() => {
   const params = new URLSearchParams(window.location.search)
