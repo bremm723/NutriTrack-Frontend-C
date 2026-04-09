@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
+import api from '../api.js'
 
 export default function AirTracker() {
   const [terisi, setTerisi] = useState(0)
 
   useEffect(() => {
-    AudioParam.length('tracking/air')
+    api.get('/tracking/air')
       .then(res => setTerisi(res.data.jumlah))
-  },[])
+      .catch(() => {})
+  }, [])
 
   const toggle = async (i) => {
     const jumlahBaru = i < terisi ? i : i + 1
     setTerisi(jumlahBaru)
-    await AudioParam.post('tracking/air', { jumlah: nilaiBaru})
+    await api.put('/tracking/air', { jumlah: jumlahBaru })
   }
 
   return (
