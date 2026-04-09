@@ -85,15 +85,12 @@ useEffect(() => {
 }, [])
 
   useEffect(() => {
-    if (loadingAuth) {
-  return <div>Loading...</div>
-}
     if (!user) return
     api.get('user/target')
-    .then(res => {
-      setTargetMingguan(res.data.targetMingguan)
-      setTargetHarian(res.data.targetHarian)
-    })
+      .then(res => {
+        setTargetMingguan(res.data.targetMingguan)
+        setTargetHarian(res.data.targetHarian)
+      })
   }, [user])
 
 const terapkanTarget = async (hari, kalori) => {
@@ -118,12 +115,16 @@ const terapkanTarget = async (hari, kalori) => {
     lemak:   acc.lemak   + (it.lemak   || 0),
   }), { kalori:0, karbo:0, protein:0, lemak:0 })
 
- if (!user) {
-  if (authPage === 'login') {
-    return <HalamanLogin onLogin={handleLogin} onKeRegister={() => setAuthPage('register')} />
+  if (loadingAuth) {
+    return <div>Loading...</div>
   }
-  return <HalamanRegister onRegister={handleRegister} onKeLogin={() => setAuthPage('login')} />
-}
+
+  if (!user) {
+    if (authPage === 'login') {
+      return <HalamanLogin onLogin={handleLogin} onKeRegister={() => setAuthPage('register')} />
+    }
+    return <HalamanRegister onRegister={handleRegister} onKeLogin={() => setAuthPage('login')} />
+  }
 
   return (
     <>
