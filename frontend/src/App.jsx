@@ -13,11 +13,13 @@ import HalamanProfil     from './components/HalamanProfil.jsx'
 import KalkulatorKalori  from './components/KalkulatorKalori.jsx'
 import HalamanSetelan    from './components/HalamanSetelan.jsx'
 import JendelaNotifikasi from './components/JendelaNotifikasi.jsx'
+import api from './api.js'
 
 const HARI_MAP = { Senin:0, Selasa:1, Rabu:2, Kamis:3, Jumat:4, Sabtu:5, Minggu:6 }
 
 export default function App() {
   const [authPage, setAuthPage] = useState('login')
+  const [loadingAuth, setLoadingAuth] = useState(true)
   const [user,     setUser]     = useState(null)
   const [halaman,  setHalaman]  = useState('dashboard')
   const [tema,     setTema]     = useState('light')
@@ -57,26 +59,35 @@ export default function App() {
 
 useEffect(() => {
   const params = new URLSearchParams(window.location.search)
-  const token = params.get("token")
+  const tokenFromUrl = params.get("token")
+  const tokenFromStorage = localStorage.getItem("token")
+
+  const token = tokenFromUrl || tokenFromStorage
 
   if (token) {
-    // simpan token
     localStorage.setItem("token", token)
 
-    // OPTIONAL: decode token kalau mau ambil user basic
     try {
       const payload = JSON.parse(atob(token.split('.')[1]))
-      setUser({ id: payload.id }) // minimal biar dianggap login
+      setUser({ id: payload.id })
     } catch (err) {
       console.error("Invalid token")
+      localStorage.removeItem("token")
     }
+  }
 
-    // bersihin URL
+  // hapus token dari URL biar bersih
+  if (tokenFromUrl) {
     window.history.replaceState({}, document.title, "/")
   }
+
+  setLoadingAuth(false)
 }, [])
 
   useEffect(() => {
+    if (loadingAuth) {
+  return <div>Loading...</div>
+}
     if (!user) return
     api.get('user/target')
     .then(res => {
