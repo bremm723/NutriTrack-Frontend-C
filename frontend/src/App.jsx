@@ -116,23 +116,29 @@ useEffect(() => {
 
   useEffect(() => {
     if (!user) return
-    api.get('user/target')
+    api.get('/user/target')
       .then(res => {
-        setTargetMingguan(res.data.targetMingguan || Array(7).fill(null))
-        setTargetHarian(res.data.targetHarian)
+        if (res.data) {
+          setTargetMingguan(Array.isArray(res.data.targetMingguan) ? res.data.targetMingguan : Array(7).fill(null))
+          setTargetHarian(res.data.targetHarian)
+        }
       })
+      .catch(err => console.warn('Gagal load target kalori:', err))
 
     // Fetch catatan / tracking hari ini
     api.get('/tracking')
       .then(res => {
-        const loaded = res.data.map(t => ({
-          id: t.id,
-          nama: t.food.name, kalori: t.food.calories,
-          karbo: t.food.carbs, protein: t.food.protein, lemak: t.food.fat,
-          porsi: t.food.portion, waktu: t.mealTime
-        }))
-        setCatatanItems(loaded)
+        if (Array.isArray(res.data)) {
+          const loaded = res.data.map(t => ({
+            id: t.id,
+            nama: t.food?.name || 'Unknown', kalori: t.food?.calories || 0,
+            karbo: t.food?.carbs || 0, protein: t.food?.protein || 0, lemak: t.food?.fat || 0,
+            porsi: t.food?.portion || '1 porsi', waktu: t.mealTime
+          }))
+          setCatatanItems(loaded)
+        }
       })
+      .catch(err => console.warn('Gagal load catatan makanan:', err))
   }, [user])
 
 const terapkanTarget = async (hari, kalori) => {
